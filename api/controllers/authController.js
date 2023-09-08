@@ -25,9 +25,7 @@ const createSendToken = (user, statusCode, res)=>{
 }
 
 
-exports.signup = async(req,res)=>{
-    console.log("jelly")
-    console.log(req.body)
+exports.signup = catchAsync(async(req,res,next)=>{
     const newUser = await User.create({
         name: req.body.name,
         email:req.body.email,
@@ -39,31 +37,31 @@ exports.signup = async(req,res)=>{
 
     createSendToken(newUser, 201, res);
     
-};
+});
 
 
-exports.login =async (req,res) => {
+exports.login =catchAsync(async (req,res,next) => {
     const { email, password } = req.body     // simply means const email = req.body.email, const password = req.body.pasword
 
 
     //1) Check if the email, password exist
-    // if(!email || !password){
-    //    return next(new AppError('please provide emailand passwrd',400));
-    // }
+    if(!email || !password){
+       return next(new AppError('please provide emailand password',400));
+    }
 
     //Check if user exists and password is correct
     const user = await User.findOne({ email }).select('+password')        //this ({ email }) simply means ({email:email})
     //we need to explicitly select the password field as the output doesnt contain password and we need that to check
 
     // const correct = await user.correctPassword(password, user.password) // ye yhi p await ho jayega toh if vale m srf first user vali statement run hogi therefore to prevent this and made if to check botht he statements we will await this there
-    // if(!user || !(await user.correctPassword(password, user.password))){
-    //     return next(new AppError('Incorrect email or password',401))  // 401 means unauthorized
-    // }
+    if(!user || !(await user.correctPassword(password, user.password))){
+        return next(new AppError('Incorrect email or password',401))  // 401 means unauthorized
+    }
  
     //if everything ok, send token to the client
    createSendToken(user, 200, res);
 
-};
+});
 
 exports.protect = catchAsync(async (req, res, next)=>{
 

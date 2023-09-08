@@ -42,6 +42,26 @@ const userSchema = new mongoose.Schema({
     }
 })
 
+userSchema.pre('save', async function(next){
+    if(!this.isModified('password')) return next();
+
+    // Hash the password with CPU cost 12
+    this.password = await bcrypt.hash(this.password, 12);
+
+    //DELETE the passwordConfirm field as we only need password field in our DB
+    this.passwordConfirm = undefined;
+
+    next();
+});
+
+
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword){
+    // we cannot use this.Pasword as candidate password here bcz password is not there in output as select: false
+    return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+
+
 const User = mongoose.model('User',userSchema);
 
 module.exports = User;
