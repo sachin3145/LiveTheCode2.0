@@ -91,7 +91,21 @@ exports.protect = catchAsync(async (req, res, next)=>{
    }  
 
 
+
+
+
    // Grant acces to protected routes
    req.user = currentUser;
     next();
 });
+
+exports.restrictTo = (...roles) => {
+    //roles here is an array containing values passesd in by the time restrictTo is called i.e['admin','lead-guide']
+
+    return(req, res,next) =>{
+        if(!roles.includes(req.user.role)){
+            return next( new AppError('you do not have permissioin to perform this action',403 ));
+        }
+        next();
+    }
+}

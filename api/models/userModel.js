@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
             message:"password should be same!"
         }
     }
-})
+});
 
 userSchema.pre('save', async function(next){
     if(!this.isModified('password')) return next();

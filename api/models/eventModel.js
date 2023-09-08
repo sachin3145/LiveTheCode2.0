@@ -17,13 +17,13 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     required: [true, "Please enter schedule"],
   },
-  location: {
-    type: "Point",
-    coordinates: [Number],
-    required: [true, "Please enter [longitude, latitude]"],
-  },
+ 
+    location:{
+    type: [Number],
+}
+,
 });
 
-const Event = mongoose.model("Event", userSchema);
+const Event = mongoose.model("Event", eventSchema);
 
 module.exports = Event;
