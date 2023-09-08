@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.get("/", (req, res) => {
-  res.send(<html>HELLO WORLD</html>)
+  res.send("HELLO WORLD")
 });
 
 app.use("/api/v1/users", userRouter);
