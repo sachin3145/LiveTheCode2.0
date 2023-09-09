@@ -16,9 +16,13 @@ const eventSchema = new mongoose.Schema({
     default: "",
     required: [false, "Please describe the event"],
   },
-  schedule: {
+  startDate: {
     type: Date,
-    required: [true, "Please enter schedule"],
+    required: [true, "Please enter start date"],
+  },
+  endDate : {
+    type : Date,
+    required : [true, "Please enter end date"]
   },
   location: {
     type: [Decimal128],

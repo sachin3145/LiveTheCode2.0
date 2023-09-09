@@ -7,8 +7,9 @@ const authController = require('../controllers/authController');
 
 router
 .route('/')
-.get(eventController.getAllEvents)
 .post(eventController.addNewEvent);
+
+router.route("/getEvents").post(eventController.getAllEvents);
 
 router
 .route('/:id')

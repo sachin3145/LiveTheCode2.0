@@ -6,13 +6,32 @@ const AppError = require("../../utils/appError");
 
 exports.getAllEvents = catchAsync(async (req, res, next) => {
   const events = await Event.find();
-console.log(req.body);
+  console.log(req.body);
   if (req.body.location && req.body.distance) {
     let filteredEvents = [];
-    Object.values(events).forEach(e=>{
-        if (isDistanceWithinRange(e.location, req.body.location, req.body.distance))
-        filteredEvents.push(e);
-    })
+    Object.values(events).forEach((e) => {
+      if (
+        isDistanceWithinRange(e.location, req.body.location, req.body.distance)
+      ) {
+        const time = req.body.time;
+        const current = new Date();
+        if (time == "On Going") {
+          if (e.startDate <= current && current <= e.endDate) {
+            filteredEvents.push(e);
+          }
+        } else if (time == "Upcoming") {
+          if (e.startDate > current) {
+            filteredEvents.push(e);
+          }
+        } else if (time == "Past") {
+          if (e.endDate < current) {
+            filteredEvents.push(e);
+          }
+        } else {
+          filteredEvents.push(e);
+        }
+      }
+    });
     //SEND FILTERED RESPONSE
     res.status(200).json({
       status: "success",
@@ -21,18 +40,16 @@ console.log(req.body);
         filteredEvents,
       },
     });
-  }
-  else{
+  } else {
     console.log("no filter");
     //SEND RESPONSE
-res.status(200).json({
-    status: 'success',
-    results: events.length,
-    data: {
-     events
-    }
- });
- 
+    res.status(200).json({
+      status: "success",
+      results: events.length,
+      data: {
+        events,
+      },
+    });
   }
 });
 
@@ -51,8 +68,19 @@ exports.getParticularEvent = catchAsync(async (req, res, next) => {
 
 exports.addNewEvent = catchAsync(async (req, res, next) => {
   // IN post method req contains some data that need to be sent but express doesnt itself have property to hold that requested data or to put that body dataon the request, therefore we require some Middleware
-
-  const newEvent = await Event.create(req.body);
+  const startDate = new Date(req.body.startDate);
+  const endDate = new Date(req.body.endDate);
+  console.log(req.body.startDate);
+  console.log(startDate);
+  const newEvent = await Event.create({
+    name: req.body.name,
+    theme: req.body.theme,
+    description: req.body.description,
+    startDate,
+    endDate,
+    location: req.body.location,
+    owner: req.body.owner,
+  });
 
   res.status(201).json({
     status: "Success",
