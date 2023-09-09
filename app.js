@@ -24,7 +24,14 @@ app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-app.use(globalErrorHandler);
+
+app.use((err, req, res, next) => {
+  res.status(500).json({
+    error: {
+      message: err.message || "Something went wrong",
+    },
+  });
+});
 
 
 module.exports = app;
