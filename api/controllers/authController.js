@@ -37,10 +37,7 @@ exports.signup = catchAsync(async(req,res,next)=>{
   if (resp){
         createSendToken(newUser, 201, res);
   }
-    console.log(req.body);
-
-    
-    
+       
 });
 
 
